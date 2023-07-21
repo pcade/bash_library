@@ -72,3 +72,17 @@ function ansible_bash {
     	sshpass -p $PASSWD ssh $USR@$NAME_IP 'mkdir forEXAMPLE;echo "hello;exit"' #как указанно в ковычках по примеру указать необходимые команды 	# подключаюсь по sshpass
     done
 }
+
+# ============================================================================
+# Функция для создания снифера
+# ============================================================================
+
+function sniffer {
+    $USER='whoami'
+
+    sudo echo -e '#!/bin/bash/\n\nsudo tcpdump -i any -nn src host your-ip or dst host your-ip' > /home/$USER/sniffer.sh
+    sudo chmod 755 /home/$USER/sniffer.sh
+    sudo echo -e '[Unit]\nDescription=Sniffer\n\n[Service]\nExecStart=/home/$USER/sniffer.sh\n\n[Install]\nWantedBy=multi-user.target' > /etc/systemd/system/sniffer.service
+    sudo systemctl daemon-reload
+    sudo systemctl enable sniffer.service
+}

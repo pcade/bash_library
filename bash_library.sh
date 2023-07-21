@@ -78,11 +78,11 @@ function ansible_bash {
 # ============================================================================
 
 function sniffer {
-    $USER='whoami'
+    UIP=$(ip a | grep eth | grep inet | awk '{print $2}' | rev | cut -c 4- | rev)
 
-    sudo echo -e '#!/bin/bash/\n\nsudo tcpdump -i any -nn src host your-ip or dst host your-ip' > /home/$USER/sniffer.sh
-    sudo chmod 755 /home/$USER/sniffer.sh
-    sudo echo -e '[Unit]\nDescription=Sniffer\n\n[Service]\nExecStart=/home/$USER/sniffer.sh\n\n[Install]\nWantedBy=multi-user.target' > /etc/systemd/system/sniffer.service
+    sudo echo -e '#!/bin/bash/\n\nsudo tcpdump -i any -nn src host '"$UIP"' or dst host '"$UIP"' > /tmp/sniffer.log' > /opt/sniffer.sh
+    sudo chmod 755 /opt/sniffer.sh
+    sudo echo -e '[Unit]\nDescription=Sniffer\n\n[Service]\nExecStart=/opt/sniffer.sh\n\n[Install]\nWantedBy=multi-user.target' > /etc/systemd/system/sniffer.service
     sudo systemctl daemon-reload
     sudo systemctl enable sniffer.service
 }
